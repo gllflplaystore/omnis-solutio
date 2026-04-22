@@ -1,0 +1,107 @@
+import { ArrowUpRight } from "lucide-react";
+import { useTranslation } from "@/hooks/useTranslation";
+import { useParams } from "react-router-dom";
+import GlobalNetwork from "@/components/GlobeNetwork";
+import GlobeWrapper from "@/components/GlobeWrapper";
+import Container from "@/components/ui/Container";
+import * as Badge from "@/components/ui/Badge";
+
+export default function HeroSection() {
+  const { t } = useTranslation();
+  const { country = "global", lang = "en" } = useParams<{
+    country: string;
+    lang: string;
+  }>();
+
+  const marqueeItems = [
+    "Global Payment Gateway",
+    "Multi-Currency Support",
+    "Cross-Border Payments",
+    "Secure Online Payments",
+    "AI-Enabled Enhancements",
+    "Chargeback Protection",
+    "PCI DSS Compliant",
+    "Payment Gateway API",
+  ];
+
+  return (
+    <>
+      <section id="home" className="py-10 md:py-14">
+        <Container className="flex flex-col items-center gap-10 sm:gap-12 lg:flex-row lg:items-center lg:gap-14">
+          {/* LEFT SIDE */}
+          <div className="flex flex-1 flex-col items-center text-center lg:items-start lg:text-left gap-5 sm:gap-6">
+            {/* Badge */}
+            <Badge.Root
+              variant="light"
+              color="orange"
+              size="medium"
+              className="tracking-widest uppercase ring-0 px-4 py-1.5 h-auto"
+            >
+              <Badge.Dot className="animate-pulse" />
+              {t("hero.tagline")}
+            </Badge.Root>
+
+            {/* Headline */}
+            {/* <h1 className="text-2xl font-medium text-white leading-snug tracking-tight sm:text-4xl lg:text-[56px] lg:leading-[1.1]"> */}
+            <h1 className="text-title-h5 lg:text-title-h3 xl:text-title-h2 text-text-strong-950 font-semibold">
+              {t("hero.headline")}
+            </h1>
+
+            {/* Subheading */}
+            <p className="max-w-xl text-sm text-text-strong-950 leading-6 sm:text-base tracking-[-0.176px]">
+              {t("hero.subheading")}
+            </p>
+
+            {/* CTA */}
+            <div className="pt-2 sm:pt-4">
+              <a
+                href={`/${country}/${lang}#contact`}
+                className="inline-flex items-center gap-2 rounded-xl bg-orange-500 px-5 py-2.5 text-sm font-semibold text-white transition-all duration-300 hover:bg-orange-600 shadow-[0_1px_2px_0_rgba(14,18,27,0.24),0_0_0_1px_#FA7319] sm:px-6 sm:py-3"
+              >
+                {t("hero.cta_primary")}
+                <ArrowUpRight size={16} />
+              </a>
+            </div>
+          </div>
+
+          {/* RIGHT SIDE - Globe */}
+          <div className="w-full max-w-[320px] sm:max-w-[420px] lg:max-w-none lg:w-auto shrink-0 flex items-center justify-center">
+            <div className="relative w-full aspect-square">
+              {/* Subtle glow */}
+              <div className="absolute inset-0 rounded-full bg-white/3 blur-3xl" />
+              <GlobeWrapper>
+                <GlobalNetwork />
+                {/* <GlobalNetwork countryCodes={["in", "us", "jp"]} /> */}
+              </GlobeWrapper>
+            </div>
+          </div>
+        </Container>
+      </section>
+      <section className="w-full overflow-hidden">
+        {/* MARQUEE */}
+        <Container>
+          <div className="border-y border-(--color-stroke-soft-200) mt-10 sm:mt-14 lg:mt-0 py-5 sm:py-6 flex items-center justify-center w-full overflow-hidden">
+            {/* fade masks on both edges */}
+            <div className="w-full relative overflow-hidden mask-[linear-gradient(to_right,transparent_0%,black_8%,black_92%,transparent_100%)]">
+              <div className="flex animate-marquee w-max">
+                {[...marqueeItems, ...marqueeItems, ...marqueeItems].map(
+                  (item, index) => (
+                    <div
+                      key={index}
+                      className="flex shrink-0 items-center gap-2 sm:gap-3 px-3 sm:px-5 lg:px-6"
+                    >
+                      <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-(--color-stroke-sub-300) sm:h-2 sm:w-2" />
+                      <span className="whitespace-nowrap text-xs sm:text-sm lg:text-base font-medium uppercase tracking-widest text-(--color-text-soft-400)">
+                        {item}
+                      </span>
+                    </div>
+                  ),
+                )}
+              </div>
+            </div>
+          </div>
+        </Container>
+      </section>
+    </>
+  );
+}

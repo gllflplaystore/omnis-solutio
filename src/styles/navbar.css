@@ -1,0 +1,141 @@
+/* ===== Navbar / Header styles ===== */
+
+/* Blur page content while the mobile drawer is open */
+body.mobile-menu-open main {
+  filter: blur(4px);
+  transition: filter 0.3s ease;
+  pointer-events: none;
+  user-select: none;
+}
+
+main {
+  transition: filter 0.3s ease;
+}
+
+/* ===== Drawer panel shadow ===== */
+.drawer-panel {
+  box-shadow:
+    -30px 0 60px -16px rgba(0, 0, 0, 0.22),
+    -14px 0 30px -10px rgba(0, 0, 0, 0.14),
+    -6px 0 12px -4px rgba(0, 0, 0, 0.08),
+    0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+
+/* RTL: drawer opens from the left, shadow falls to the right */
+.drawer-panel-rtl {
+  box-shadow:
+    30px 0 60px -16px rgba(0, 0, 0, 0.22),
+    14px 0 30px -10px rgba(0, 0, 0, 0.14),
+    6px 0 12px -4px rgba(0, 0, 0, 0.08),
+    0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+
+/* ===== Mobile drawer animations ===== */
+
+/* Staggered slide-in for each nav item */
+@keyframes drawer-item-in {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* RTL: slide from the opposite direction */
+@keyframes drawer-item-in-rtl {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.drawer-item {
+  opacity: 0;
+  animation: drawer-item-in 0.18s ease-out forwards;
+}
+
+[dir="rtl"] .drawer-item {
+  animation-name: drawer-item-in-rtl;
+}
+
+/* Smooth accordion expand/collapse via grid rows */
+.drawer-accordion {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-6px);
+  pointer-events: none;
+  will-change: max-height, opacity, transform;
+  transition:
+    max-height 0.44s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.32s ease,
+    transform 0.32s ease;
+}
+.drawer-accordion.open {
+  max-height: 720px;
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.drawer-accordion > div {
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+
+/* Sub-items animate both when opening and closing */
+.drawer-sub-item {
+  opacity: 0;
+  transform: translateY(-3px);
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
+}
+
+.drawer-accordion.open .drawer-sub-item {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.06s;
+}
+
+.drawer-accordion:not(.open) .drawer-sub-item {
+  transition-delay: 0s;
+}
+
+/* ===== Mega-menu animations ===== */
+
+@keyframes mega-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes mega-menu-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+}
+
+.mega-menu-enter {
+  animation: mega-menu-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.mega-menu-exit {
+  animation: mega-menu-out 0.28s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
