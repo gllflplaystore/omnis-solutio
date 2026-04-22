@@ -23,11 +23,11 @@ pipeline {
             }
         }
 
-        stage('Lint (Optional)') {
-            steps {
-                bat 'npm run lint || exit 0'
-            }
-        }
+        // stage('Lint (Optional)') {
+        //     steps {
+        //         bat 'npm run lint || exit 0'
+        //     }
+        // }
 
         stage('Run Tests') {
             steps {
