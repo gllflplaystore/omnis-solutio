@@ -2,12 +2,11 @@ pipeline {
     agent any
 
     tools {
-        jdk 'JDK-21'
-        maven 'Maven-3.9.12'
+        nodejs 'NodeJS-18'   // configure in Jenkins → Global Tool Configuration
     }
 
     environment {
-        MAVEN_OPTS = '-Xmx1024m'
+        CI = 'true'
     }
 
     stages {
@@ -18,92 +17,80 @@ pipeline {
             }
         }
 
-        stage('Build All Microservices') {
+        stage('Install Dependencies') {
             steps {
-                bat 'mvn clean install -DskipTests -U'
+                bat 'npm install'
             }
         }
 
-        stage('Run Unit Tests') {
+        stage('Lint (Optional)') {
             steps {
-                bat 'mvn test'
+                bat 'npm run lint || exit 0'
             }
         }
 
-        // ✅ NEW: Wait until SonarQube is fully ready
-        stage('Wait for SonarQube') {
+        stage('Run Tests') {
             steps {
-                script {
-                    timeout(time: 2, unit: 'MINUTES') {
-                        waitUntil {
-                            def status = bat(
-                                script: 'curl -s http://localhost:9000/api/system/status',
-                                returnStdout: true
-                            ).trim()
-
-                            echo "SonarQube Status: ${status}"
-
-                            return status.contains('UP')
-                        }
-                    }
-                }
+                bat 'npm test -- --watchAll=false'
             }
         }
 
+        stage('Build React App') {
+            steps {
+                bat 'npm run build'
+            }
+        }
+
+        // ✅ SonarQube (for JS/React)
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
                     withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
                         bat """
-                        mvn clean verify sonar:sonar ^
-                        -Dsonar.projectKey=backend ^
-                        -Dsonar.projectName=backend ^
-                        -Dsonar.token=${SONAR_TOKEN}
+                        npx sonar-scanner ^
+                        -Dsonar.projectKey=react-app ^
+                        -Dsonar.projectName=react-app ^
+                        -Dsonar.sources=src ^
+                        -Dsonar.host.url=http://localhost:9000 ^
+                        -Dsonar.login=%SONAR_TOKEN%
                         """
                     }
                 }
             }
         }
 
-
         stage('Quality Gate') {
             steps {
-                timeout(time: 15, unit: 'MINUTES') {
+                timeout(time: 10, unit: 'MINUTES') {
                     waitForQualityGate abortPipeline: false
                 }
             }
         }
 
-        stage('Verify Artifacts') {
+        stage('Build Docker Image') {
             steps {
-                bat 'dir /s /b target'
+                bat 'docker build -t react-app .'
             }
         }
 
-        stage('Docker Build') {
+        stage('Run Docker Container') {
             steps {
-                bat 'docker compose build'
-            }
-        }
-
-        stage('Docker Refresh') {
-            steps {
-                bat 'docker compose down -v'
-                bat 'docker compose pull'
-                bat 'docker compose up -d'
+                bat 'docker stop react-app || exit 0'
+                bat 'docker rm react-app || exit 0'
+                bat 'docker run -d -p 3000:80 --name react-app react-app'
             }
         }
     }
 
     post {
         success {
-            echo '✅ Build completed successfully!'
+            echo '✅ React Build & Deployment Successful!'
         }
         failure {
-            echo '❌ Build failed.'
+            echo '❌ Build Failed!'
         }
         always {
-            echo 'Pipeline finished.'
+            echo 'Pipeline Finished.'
         }
     }
 }
