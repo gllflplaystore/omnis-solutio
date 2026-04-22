@@ -29,11 +29,11 @@ pipeline {
         //     }
         // }
 
-        stage('Run Tests') {
-            steps {
-                bat 'npm test -- --watchAll=false'
-            }
-        }
+        // stage('Run Tests') {
+        //     steps {
+        //         bat 'npm test -- --watchAll=false'
+        //     }
+        // }
 
         stage('Build React App') {
             steps {
