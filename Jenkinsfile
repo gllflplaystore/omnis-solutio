@@ -90,7 +90,7 @@ pipeline {
             echo '❌ Build Failed!'
         }
         always {
-            echo 'Pipeline Finished.'
+            echo 'Pipeline Finished!'
         }
     }
 }
